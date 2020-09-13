@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -185,18 +186,28 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
             //   scale: _hideFabAnimation,
             //   alignment: Alignment.bottomCenter,
             //   child:
-          FloatingActionButton(
-                backgroundColor: Colors.teal,
-                child: Icon(Icons.add),
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TarefaScreen(
-                        tarefa: null,
-                        index: -1,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FloatingActionButton(
+                        backgroundColor: Colors.teal,
+                        child: Icon(Icons.add),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TarefaScreen(
+                                tarefa: null,
+                                index: -1,
+                              ),
+                            )).then((value) => _reloadList()),
                       ),
-                    )).then((value) => _reloadList()),
+                ],
               ),
+            ],
+          ),
             // )
     )
     );
