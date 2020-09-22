@@ -60,9 +60,12 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
 
   _removeItem(List<int> listaIndex) {
     setState(() {
+      int count = 0;
       for (int index in listaIndex) {
-        list.removeAt(index);
+        list.removeAt(index-count);
+        count++;
       }
+      _tarefasSelecionadas.clear();
     });
     SharedPreferences.getInstance()
         .then((prefs) => prefs.setString('list', jsonEncode(list)));
@@ -130,7 +133,7 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
     Color cor;
 
     if (_tarefasSelecionadas.contains(index)) {
-      cor = Colors.grey;
+      cor = Colors.blueGrey;
     } else {
       if (list[index].status == 'F') {
         cor = Colors.greenAccent;
@@ -185,7 +188,7 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
         } else {
           if (list[index].status == list[_tarefasSelecionadas[0]].status) {
             _tarefasSelecionadas.add(index);
-          } else {}
+          }
         }
       });
     } else {
