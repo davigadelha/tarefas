@@ -6,6 +6,7 @@ import 'package:tarefas/models/menu_item.dart';
 import 'package:tarefas/models/tarefa.dart';
 import 'package:tarefas/util/constantes.dart';
 import 'package:tarefas/util/data_util.dart';
+import 'package:tarefas/util/tarefa_util.dart';
 
 class TarefaScreen extends StatefulWidget {
   final Tarefa tarefa;
@@ -252,7 +253,27 @@ class _TarefaScreenState extends State<TarefaScreen> {
                   style: _edit != null && _edit
                       ? TextStyle(fontWeight: FontWeight.normal)
                       : TextStyle(fontWeight: FontWeight.w200),
-                ),
+                )
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text('Status: ',
+                    textAlign: TextAlign.start,
+                    style: _edit != null && _edit
+                        ? TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
+                        : TextStyle(fontSize: 15, fontWeight: FontWeight.w200)),
+                Visibility(
+                    visible: _tarefa != null && _tarefa.dataCriacao != null,
+                    child:
+                      Text('${TarefaUtil.descricaoStatus(_tarefa)}',
+                        style: _edit != null && _edit
+                            ? TextStyle(fontSize: 15, fontWeight: FontWeight.normal)
+                            : TextStyle(fontSize: 15, fontWeight: FontWeight.w200))
+                )
               ],
             ),
           ),

@@ -34,24 +34,7 @@ class CustomSearchDelegate extends SearchDelegate {
     );
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
-    if (query.length < 3) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Center(
-            child: Text(
-              "Search term must be longer than two letters.",
-            ),
-          )
-        ],
-      );
-    }
-
-    //Add the search term to the searchBloc.
-    //The Bloc will then handle the searching and add the results to the searchResults stream.
-    //This is the equivalent of submitting the search term to whatever search service you are using
+  Widget _retornarListaTarefas(){
     _tarefasFiltradas = _tarefas.where((tarefa) => tarefa.titulo.contains(query) || tarefa.descricao.contains(query)).toList();
 
     if (_tarefasFiltradas.isEmpty) {
@@ -82,13 +65,13 @@ class CustomSearchDelegate extends SearchDelegate {
                   style: _tarefasFiltradas[index].status == 'F' ? Constantes.doneStyle : null),
               onTap: () => {
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TarefaScreen(
-                      tarefa: _tarefasFiltradas[index],
-                      index: index,
-                    ),
-                  )
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TarefaScreen(
+                        tarefa: _tarefasFiltradas[index],
+                        index: index,
+                      ),
+                    )
                 )
               },
               trailing: Row(
@@ -107,10 +90,30 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 
   @override
+  Widget buildResults(BuildContext context) {
+    // if (query.length < 3) {
+    //   return Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Center(
+    //         child: Text(
+    //           "Search term must be longer than two letters.",
+    //           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    //         ),
+    //       )
+    //     ],
+    //   );
+    // }
+    return _retornarListaTarefas();
+
+  }
+
+  @override
   Widget buildSuggestions(BuildContext context) {
     // This method is called everytime the search term changes.
     // If you want to add search suggestions as the user enters their search term, this is the place to do that.
-    return Column();
+    // return Column();
+    return _retornarListaTarefas();
   }
 
 
