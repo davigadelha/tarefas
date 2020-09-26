@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tarefas/components/custom_search_delegate.dart';
 import 'package:tarefas/models/tarefa.dart';
 import 'package:tarefas/screens/tarefa_screen.dart';
 import 'package:tarefas/util/constantes.dart';
@@ -28,12 +29,6 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
     _tarefasSelecionadas = List<int>();
     _reloadList();
   }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  // }
-
   _reloadList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -88,6 +83,12 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
         .then((prefs) => prefs.setString('list', jsonEncode(list)));
   }
 
+  _cancelSelection(){
+    setState(() {
+      _tarefasSelecionadas.clear();
+    });
+  }
+
   // _redoItem(int index) {
   //   setState(() {
   //     list[index].status = 'A';
@@ -136,7 +137,7 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
       cor = Colors.blueGrey;
     } else {
       if (list[index].status == 'F') {
-        cor = Colors.greenAccent;
+        cor = Color(0xAA2bfe72);
       } else {
         if (list[index].dataVencimento == null) {
           cor = null;
@@ -147,9 +148,9 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
                 _diffInDays(list[index].dataVencimento, DateTime.now());
           }
           if (diasVencimento > 0 && diasVencimento < 3) {
-            cor = Color(0xB3f9e202);
+            cor = Color(0xA8f5ea95);
           } else if (diasVencimento < 1) {
-            cor = Colors.redAccent;
+            cor = Color(0xB3f9260e);
           } else {
             cor = null;
           }
@@ -202,13 +203,21 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
           )).then((value) => _reloadList());
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Constantes.corPadrao,
-        title: Text('Tarefas a fazer'),
+        title: Text('Lista de Tarefas'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: CustomSearchDelegate(list));
+            },
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -235,26 +244,6 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
                     Text(list[index].dataCriacao != null
                         ? '${DataUtil.getDataFormatada(list[index].dataCriacao)}'
                         : '')
-//                    Visibility(
-//                      visible: list[index].status == 'A' ? true : false,
-//                      child:
-//                         IconButton(
-//                           icon: Icon(Icons.clear),
-//                           onPressed: () => _showAlertDialog(
-//                               context,
-//                               'Confirma a exclusão deste item?',
-//                               _removeItem,
-//                               index),
-//                         ),
-//                    ),
-//                         IconButton(
-//                           icon: list[index].status == 'A'
-//                               ? Icon(Icons.check)
-//                               : Icon(Icons.undo),
-//                           onPressed: () => list[index].status == 'A'
-//                               ? _doneItem(index)
-//                               : _redoItem(index),
-//                         )
                   ],
                 ),
               ),
@@ -266,11 +255,14 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
         visible: _tarefasSelecionadas.length > 0,
         child: BottomNavigationBar(
           iconSize: 30,
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Constantes.corPadrao,
           onTap: (index) {
             if (index == 0) {
               _removeItem(_tarefasSelecionadas);
-            } else {
+            } else if (index == 1) {
+              _cancelSelection();
+            }
+            else {
               _doneItem(_tarefasSelecionadas);
             }
           },
@@ -290,16 +282,22 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
                 '',
                 style: TextStyle(fontSize: 1),
               ),
+              icon: Icon(
+                Icons.cancel,
+                color: Colors.white,
+              ),
+            ),
+            BottomNavigationBarItem(
+              title: Text(
+                '',
+                style: TextStyle(fontSize: 1),
+              ),
               icon: _iconeDoneUndo(),
             ),
           ],
         ),
       ),
       floatingActionButton:
-          // ScaleTransition(
-          //   scale: _hideFabAnimation,
-          //   alignment: Alignment.bottomCenter,
-          //   child:
           Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
