@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tarefas/models/menu_item.dart';
 import 'package:tarefas/models/tarefa.dart';
+import 'package:tarefas/screens/lista_tarefas_screen.dart';
 import 'package:tarefas/util/constantes.dart';
 import 'package:tarefas/util/data_util.dart';
 import 'package:tarefas/util/tarefa_util.dart';
@@ -47,8 +48,8 @@ class _TarefaScreenState extends State<TarefaScreen> {
       _dataVencimento = _tarefa.dataVencimento;
 
       _menuItems = <MenuItem>[
-        MenuItem.fromAtributos(Constantes.editar, '',
-            Icon(Icons.edit, size: 24, color: Colors.blue)),
+        // MenuItem.fromAtributos(Constantes.editar, '',
+        //     Icon(Icons.edit, size: 24, color: Colors.blue)),
         MenuItem.fromAtributos(Constantes.deletar, '',
             Icon(Icons.delete, size: 24, color: Colors.blue))
       ];
@@ -105,7 +106,11 @@ class _TarefaScreenState extends State<TarefaScreen> {
       }
 
       prefs.setString('list', jsonEncode(list));
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ListaTarefasScreen(),
+          ));
     }
   }
 
@@ -151,6 +156,13 @@ class _TarefaScreenState extends State<TarefaScreen> {
         title: Text('Tarefa'),
         centerTitle: true,
         actions: [
+          Visibility(
+            visible: _tarefa != null,
+            child: IconButton(
+              icon: Icon(Icons.edit, size: 24, color: Colors.white),
+              onPressed: () => choiceAction(Constantes.editar),
+            ),
+          ),
           Visibility(
             visible: _tarefa != null,
             child: PopupMenuButton<String>(
@@ -233,9 +245,7 @@ class _TarefaScreenState extends State<TarefaScreen> {
                     onPressed: () {
                       showDatePicker(
                         context: context,
-                        initialDate: _dataVencimento == null
-                            ? DateTime.now()
-                            : _dataVencimento,
+                        initialDate: DateTime.now(),
                         firstDate: DateTime.now(),
                         lastDate: DateTime(9999),
                       ).then((dataEscolhida) {
@@ -247,9 +257,11 @@ class _TarefaScreenState extends State<TarefaScreen> {
                   ),
                 ),
                 Text(
-                    (_dataVencimento == null && _edit != null && _edit)
+                  (_dataVencimento == null && _edit != null && _edit)
                       ? 'Selecione uma data'
-                      : _dataVencimento != null ? DataUtil.getDataFormatada(_dataVencimento) : '',
+                      : _dataVencimento != null
+                          ? DataUtil.getDataFormatada(_dataVencimento)
+                          : '',
                   style: _edit != null && _edit
                       ? TextStyle(fontWeight: FontWeight.normal)
                       : TextStyle(fontWeight: FontWeight.w200),
@@ -268,12 +280,12 @@ class _TarefaScreenState extends State<TarefaScreen> {
                         : TextStyle(fontSize: 15, fontWeight: FontWeight.w200)),
                 Visibility(
                     visible: _tarefa != null && _tarefa.dataCriacao != null,
-                    child:
-                      Text('${TarefaUtil.descricaoStatus(_tarefa)}',
+                    child: Text('${TarefaUtil.descricaoStatus(_tarefa)}',
                         style: _edit != null && _edit
-                            ? TextStyle(fontSize: 15, fontWeight: FontWeight.normal)
-                            : TextStyle(fontSize: 15, fontWeight: FontWeight.w200))
-                )
+                            ? TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.normal)
+                            : TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w200)))
               ],
             ),
           ),

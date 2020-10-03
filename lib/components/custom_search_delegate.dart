@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tarefas/components/list_view_tarefas.dart';
 import 'package:tarefas/models/tarefa.dart';
+import 'package:tarefas/screens/lista_tarefas_screen.dart';
 import 'package:tarefas/screens/tarefa_screen.dart';
 import 'package:tarefas/util/constantes.dart';
 import 'package:tarefas/util/data_util.dart';
@@ -30,6 +32,11 @@ class CustomSearchDelegate extends SearchDelegate {
       icon: Icon(Icons.arrow_back),
       onPressed: () {
         close(context, null);
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ListaTarefasScreen(),
+            ));
       },
     );
   }
@@ -48,44 +55,7 @@ class CustomSearchDelegate extends SearchDelegate {
       );
     }
     else{
-      return ListView.separated(
-        separatorBuilder: (context, index) => Divider(),
-        itemCount: _tarefasFiltradas.length,
-        itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(color: Colors.amber),
-            child: ListTile(
-              title: Text('${_tarefasFiltradas[index].titulo}',
-                  style: _tarefasFiltradas[index].status == 'F' ? Constantes.doneStyle : null),
-              subtitle: Text(
-                  _tarefasFiltradas[index].dataVencimento != null
-                      ? 'Vence em ${DataUtil.getDataFormatada(_tarefasFiltradas[index].dataVencimento)}'
-                      : 'Sem Data de Vencimento',
-                  maxLines: 2,
-                  style: _tarefasFiltradas[index].status == 'F' ? Constantes.doneStyle : null),
-              onTap: () => {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TarefaScreen(
-                        tarefa: _tarefasFiltradas[index],
-                        index: index,
-                      ),
-                    )
-                )
-              },
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(_tarefasFiltradas[index].dataCriacao != null
-                      ? '${DataUtil.getDataFormatada(_tarefasFiltradas[index].dataCriacao)}'
-                      : '')
-                ],
-              ),
-            ),
-          );
-        },
-      );
+      return ListViewTarefas(tarefas: _tarefas, tarefasFiltradas: _tarefasFiltradas);
     }
   }
 
