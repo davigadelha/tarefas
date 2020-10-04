@@ -9,7 +9,7 @@ import 'package:tarefas/util/data_util.dart';
 class CustomSearchDelegate extends SearchDelegate {
 
   List<Tarefa> _tarefas;
-  List<Tarefa> _tarefasFiltradas = [];
+  // List<Tarefa> _tarefasFiltradas = [];
 
   CustomSearchDelegate(List<Tarefa> tarefas) :
       _tarefas = tarefas;
@@ -42,9 +42,10 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 
   Widget _retornarListaTarefas(){
-    _tarefasFiltradas = _tarefas.where((tarefa) => tarefa.titulo.contains(query) || tarefa.descricao.contains(query)).toList();
+    List<Tarefa> tarefasFiltradas = _tarefas.where((tarefa) => tarefa.titulo.toLowerCase().contains(query.toLowerCase()) ||
+        tarefa.descricao.toLowerCase().contains(query.toLowerCase())).toList();
 
-    if (_tarefasFiltradas.isEmpty) {
+    if (tarefasFiltradas.isEmpty) {
       return Column(
         children: <Widget>[
           Text(
@@ -55,7 +56,8 @@ class CustomSearchDelegate extends SearchDelegate {
       );
     }
     else{
-      return ListViewTarefas(tarefas: _tarefas, tarefasFiltradas: _tarefasFiltradas);
+      Widget listView = ListViewTarefas(tarefas: _tarefas, tarefasFiltradas: tarefasFiltradas);
+      return listView;
     }
   }
 
