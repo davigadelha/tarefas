@@ -100,17 +100,33 @@ class _TarefaScreenState extends State<TarefaScreen> {
       }
 
       if (_index != -1) {
-        list[_index] = _tarefa;
+        list[_index].titulo = _tarefa.titulo;
+        list[_index].descricao = _tarefa.descricao;
+        list[_index].status = _tarefa.status;
+        list[_index].dataVencimento = _tarefa.dataVencimento;
       } else {
         list.add(_tarefa);
       }
 
-      prefs.setString('list', jsonEncode(list));
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ListaTarefasScreen(),
-          ));
+      list.sort((a, b) {
+        if (a.dataVencimento == null && b.dataVencimento == null) {
+          return 0;
+        } else if (a.dataVencimento != null && b.dataVencimento == null) {
+          return -1;
+        } else if (a.dataVencimento == null && b.dataVencimento != null) {
+          return 1;
+        } else {
+          return a.dataVencimento.compareTo(b.dataVencimento);
+        }
+      });
+
+      prefs.setString('list',   jsonEncode(list));
+      Navigator.pop(context);
+      // Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) => ListaTarefasScreen(),
+      //     ));
     }
   }
 
@@ -273,11 +289,14 @@ class _TarefaScreenState extends State<TarefaScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                Text('Status: ',
-                    textAlign: TextAlign.start,
-                    style: _edit != null && _edit
-                        ? TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
-                        : TextStyle(fontSize: 15, fontWeight: FontWeight.w200)),
+                Visibility(
+                  visible: _tarefa != null && _tarefa.status != null,
+                  child: Text('Status: ',
+                      textAlign: TextAlign.start,
+                      style: _edit != null && _edit
+                          ? TextStyle(fontSize: 15, fontWeight: FontWeight.bold)
+                          : TextStyle(fontSize: 15, fontWeight: FontWeight.w200)),
+                ),
                 Visibility(
                     visible: _tarefa != null && _tarefa.dataCriacao != null,
                     child: Text('${TarefaUtil.descricaoStatus(_tarefa)}',

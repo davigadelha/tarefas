@@ -38,28 +38,22 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
         var objs = jsonDecode(data) as List;
         list = objs.map((obj) => Tarefa.fromJson(obj)).toList();
 
-        list.sort((a, b) {
-          if (a.dataVencimento == null && b.dataVencimento == null) {
-            return 0;
-          } else if (a.dataVencimento != null && b.dataVencimento == null) {
-            return -1;
-          } else if (a.dataVencimento == null && b.dataVencimento != null) {
-            return 1;
-          } else {
-            return a.dataVencimento.compareTo(b.dataVencimento);
-          }
-        });
+        // s
       });
     }
   }
 
   _removeItem(List<int> listaIndex) {
+    List<Tarefa> tarefasExcluir = [];
+    for (int index in listaIndex){
+      tarefasExcluir.add(list[index]);
+    }
     setState(() {
       int count = 0;
-      for (int index in listaIndex) {
-        list.removeAt(index-count);
-        count++;
+      for (Tarefa tarefaExcluir in tarefasExcluir){
+        list.remove(tarefaExcluir);
       }
+
       _tarefasSelecionadas.clear();
     });
     SharedPreferences.getInstance()
@@ -89,16 +83,8 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
     });
   }
 
-  // _redoItem(int index) {
-  //   setState(() {
-  //     list[index].status = 'A';
-  //   });
-  //   SharedPreferences.getInstance()
-  //       .then((prefs) => prefs.setString('list', jsonEncode(list)));
-  // }
-
   _showAlertDialog(BuildContext context, String conteudo,
-      Function confirmFunction, int index) {
+      Function confirmFunction, List<int> index) {
     showDialog(
       context: context,
       builder: (context) {
@@ -258,7 +244,9 @@ class _ListaTarefasScreenState extends State<ListaTarefasScreen>
           backgroundColor: Constantes.corPadrao,
           onTap: (index) {
             if (index == 0) {
-              _removeItem(_tarefasSelecionadas);
+              _showAlertDialog(context, 'Tem certeza que deseja excluir a(s) tarefa(s) selecionada(s)?',
+                  _removeItem, _tarefasSelecionadas);
+
             } else if (index == 1) {
               _cancelSelection();
             }
